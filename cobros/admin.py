@@ -1,70 +1,17 @@
 from django.contrib import admin
-from .models import cliente, vehiculo, espacio_estacionamiento, pago, tarifa, cobro
+from .models import Cliente, Espacio, Pago
 
-# Register your models here.
-
+@admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información Personal', {
-            'fields': ('nombre', 'apellido', 'identificacion')
-        }),
-        ('Contacto', {
-            'fields': ('email', 'telefono')
-        }),
-    )
-    list_display = ('nombre', 'apellido', 'identificacion', 'email', 'telefono')
-    
-    class Media:
-        css = {
-            'all': ('admin/css/admin_custom.css',)
-        }
+    list_display = ('identificacion', 'nombre', 'apellido', 'telefono')
+    search_fields = ('identificacion', 'nombre', 'apellido')
 
-class VehiculoAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información del Vehículo', {
-            'fields': ('marca', 'modelo', 'placa')
-        }),
-        ('Cliente Asociado', {
-            'fields': ('cliente',)
-        }),
-    )
-    list_display = ('marca', 'modelo', 'placa', 'cliente')
-
-class EspacioEstacionamientoAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información del Espacio', {
-            'fields': ('numero', 'ocupado')
-        }),
-    )
+@admin.register(Espacio)
+class EspacioAdmin(admin.ModelAdmin):
     list_display = ('numero', 'ocupado')
+    list_filter = ('ocupado',)
 
+@admin.register(Pago)
 class PagoAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información del Pago', {
-            'fields': ('cliente', 'vehiculo', 'espacio_estacionamiento', 'fecha_hora_entrada', 'fecha_hora_salida', 'monto')
-        }),
-    )
-    list_display = ('id_pago', 'cliente', 'vehiculo', 'espacio_estacionamiento', 'fecha_hora_entrada', 'fecha_hora_salida', 'monto')
-
-class TarifaAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información de la Tarifa', {
-            'fields': ('descripcion', 'precio_por_hora')
-        }),
-    )
-    list_display = ('descripcion', 'precio_por_hora')
-
-class CobroAdmin(admin.ModelAdmin):
-    fieldsets = (
-        ('Información del Cobro', {
-            'fields': ('pago', 'tarifa', 'monto_total')
-        }),
-    )
-    list_display = ('id_cobro', 'pago', 'tarifa', 'monto_total')
-
-admin.site.register(cliente, ClienteAdmin)
-admin.site.register(vehiculo, VehiculoAdmin)
-admin.site.register(espacio_estacionamiento, EspacioEstacionamientoAdmin)
-admin.site.register(pago, PagoAdmin)
-admin.site.register(tarifa, TarifaAdmin)
-admin.site.register(cobro, CobroAdmin)
+    list_display = ('cliente', 'espacio', 'fecha_ingreso', 'fecha_salida', 'valor')
+    list_filter = ('fecha_ingreso', 'espacio')

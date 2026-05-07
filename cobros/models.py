@@ -1,59 +1,39 @@
 from django.db import models
 
-# Create your models here.
-class cliente(models.Model):
-    id_cliente = models.AutoField(primary_key=True)
-    nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
-    identificacion = models.CharField(max_length=20, unique=True)
-    email = models.EmailField()
-    telefono = models.CharField(max_length=20)
+class Cliente(models.Model):
+    identificacion = models.CharField(max_length=20, unique=True, verbose_name="Identificación")
+    nombre = models.CharField(max_length=100, verbose_name="Nombre")
+    apellido = models.CharField(max_length=100, verbose_name="Apellido")
+    telefono = models.CharField(max_length=15, verbose_name="Teléfono")
 
     def __str__(self):
-        return f"{self.nombre} {self.apellido}"
+        return f"{self.nombre} {self.apellido} - {self.identificacion}"
 
-class vehiculo(models.Model):
-    id_vehiculo = models.AutoField(primary_key=True)
-    cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
-    marca = models.CharField(max_length=50)
-    modelo = models.CharField(max_length=50)
-    placa = models.CharField(max_length=20, unique=True)
+    class Meta:
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
 
-    def __str__(self):
-        return f"{self.marca} {self.modelo} - {self.placa}"
-
-class espacio_estacionamiento(models.Model):
-    id_espacio = models.AutoField(primary_key=True)
-    numero = models.CharField(max_length=10, unique=True)
-    ocupado = models.BooleanField(default=False)
+class Espacio(models.Model):
+    numero = models.IntegerField(unique=True, choices=[(i, i) for i in range(1, 11)], verbose_name="Número")
+    ocupado = models.BooleanField(default=False, verbose_name="Ocupado")
 
     def __str__(self):
-        return f"Espacio {self.numero} - {'Ocupado' if self.ocupado else 'Disponible'}"
-class pago(models.Model):
-    id_pago = models.AutoField(primary_key=True)
-    cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
-    vehiculo = models.ForeignKey(vehiculo, on_delete=models.CASCADE)
-    espacio_estacionamiento = models.ForeignKey(espacio_estacionamiento, on_delete=models.CASCADE)
-    fecha_hora_entrada = models.DateTimeField()
-    fecha_hora_salida = models.DateTimeField()
-    monto = models.DecimalField(max_digits=10, decimal_places=2)
+        return f"Espacio {self.numero}"
+
+    class Meta:
+        verbose_name = "Espacio"
+        verbose_name_plural = "Espacios"
+
+class Pago(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Cliente")
+    espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, verbose_name="Espacio")
+    fecha_ingreso = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Ingreso")
+    fecha_salida = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Salida")
+    valor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Valor")
 
     def __str__(self):
-        return f"Pago {self.id_pago} - {self.cliente} - {self.vehiculo} - {self.espacio_estacionamiento}"
+        return f"Pago {self.id} - {self.cliente} - Espacio {self.espacio.numero}"
 
-class tarifa(models.Model):
-    id_tarifa = models.AutoField(primary_key=True)
-    descripcion = models.CharField(max_length=100)
-    precio_por_hora = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"{self.descripcion} - ${self.precio_por_hora}/hora"
-
-class cobro(models.Model):
-    id_cobro = models.AutoField(primary_key=True)
-    pago = models.ForeignKey(pago, on_delete=models.CASCADE)
-    tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE)
-    monto_total = models.DecimalField(max_digits=10, decimal_places=2)
-
-    def __str__(self):
-        return f"Cobro {self.id_cobro} - Pago {self.pago.id_pago} - Tarifa {self.tarifa.descripcion} - Monto Total: ${self.monto_total}"
+    class Meta:
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"
