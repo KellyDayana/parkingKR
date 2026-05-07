@@ -13,6 +13,11 @@ class ClienteAdmin(admin.ModelAdmin):
         }),
     )
     list_display = ('nombre', 'apellido', 'identificacion', 'email', 'telefono')
+    
+    class Media:
+        css = {
+            'all': ('admin/css/admin_custom.css',)
+        }
 
 class VehiculoAdmin(admin.ModelAdmin):
     fieldsets = (
