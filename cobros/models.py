@@ -11,3 +11,13 @@ class cliente(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
+class vehiculo(models.Model):
+    id_vehiculo = models.AutoField(primary_key=True)
+    cliente = models.ForeignKey(cliente, on_delete=models.CASCADE)
+    marca = models.CharField(max_length=50)
+    modelo = models.CharField(max_length=50)
+    placa = models.CharField(max_length=20, unique=True)
+
+    def __str__(self):
+        return f"{self.marca} {self.modelo} - {self.placa}"
