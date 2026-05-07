@@ -40,3 +40,11 @@ class pago(models.Model):
 
     def __str__(self):
         return f"Pago {self.id_pago} - {self.cliente} - {self.vehiculo} - {self.espacio_estacionamiento}"
+
+class tarifa(models.Model):
+    id_tarifa = models.AutoField(primary_key=True)
+    descripcion = models.CharField(max_length=100)
+    precio_por_hora = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.descripcion} - ${self.precio_por_hora}/hora"
