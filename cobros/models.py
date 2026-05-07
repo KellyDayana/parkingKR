@@ -56,4 +56,4 @@ class cobro(models.Model):
     monto_total = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return f"Cobro {self.id_cobro} - Pago {self.pago.id_pago} - Tarifa {self.tarifa.descripcion} - Monto Total: ${self.monto_total}"ws
+        return f"Cobro {self.id_cobro} - Pago {self.pago.id_pago} - Tarifa {self.tarifa.descripcion} - Monto Total: ${self.monto_total}"
