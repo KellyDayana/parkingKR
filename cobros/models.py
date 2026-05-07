@@ -48,3 +48,12 @@ class tarifa(models.Model):
 
     def __str__(self):
         return f"{self.descripcion} - ${self.precio_por_hora}/hora"
+
+class cobro(models.Model):
+    id_cobro = models.AutoField(primary_key=True)
+    pago = models.ForeignKey(pago, on_delete=models.CASCADE)
+    tarifa = models.ForeignKey(tarifa, on_delete=models.CASCADE)
+    monto_total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"Cobro {self.id_cobro} - Pago {self.pago.id_pago} - Tarifa {self.tarifa.descripcion} - Monto Total: ${self.monto_total}"ws
