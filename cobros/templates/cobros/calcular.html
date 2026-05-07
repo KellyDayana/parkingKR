@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Calcular Pago</title>
+</head>
+<body>
+    <h1>Calcular Pago de Parqueo</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Calcular</button>
+    </form>
+    {% if valor is not none %}
+        <h2>Valor a pagar: ${{ valor }}</h2>
+    {% endif %}
+</body>
+</html>

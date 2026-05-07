@@ -1,8 +1,28 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.shortcuts import render
+from django import forms
 import json
 from .models import Cliente, Espacio, Pago
+
+class CalcularPagoForm(forms.Form):
+    fecha_ingreso = forms.DateTimeField(label='Fecha de Ingreso', widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+    fecha_salida = forms.DateTimeField(label='Fecha de Salida', widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}))
+
+def calcular_pago(request):
+    if request.method == 'POST':
+        form = CalcularPagoForm(request.POST)
+        if form.is_valid():
+            fecha_ingreso = form.cleaned_data['fecha_ingreso']
+            fecha_salida = form.cleaned_data['fecha_salida']
+            duracion = fecha_salida - fecha_ingreso
+            horas = duracion.total_seconds() / 3600
+            valor = round(horas * 1, 2)  # $1 por hora
+            return render(request, 'cobros/calcular.html', {'form': form, 'valor': valor})
+    else:
+        form = CalcularPagoForm()
+    return render(request, 'cobros/calcular.html', {'form': form})
 
 # Cliente CRUD
 def cliente_list(request):
@@ -68,12 +88,13 @@ def registrar_ingreso(request):
         data = json.loads(request.body)
         cliente_id = data['cliente_id']
         espacio_numero = data['espacio_numero']
+        fecha_ingreso = data.get('fecha_ingreso')  # Manual input
         try:
             cliente = Cliente.objects.get(id=cliente_id)
             espacio = Espacio.objects.get(numero=espacio_numero, ocupado=False)
             espacio.ocupado = True
             espacio.save()
-            pago = Pago.objects.create(cliente=cliente, espacio=espacio)
+            pago = Pago.objects.create(cliente=cliente, espacio=espacio, fecha_ingreso=fecha_ingreso)
             return JsonResponse({'pago_id': pago.id, 'message': 'Ingreso registrado'})
         except Cliente.DoesNotExist:
             return JsonResponse({'error': 'Cliente no encontrado'}, status=404)
@@ -87,13 +108,14 @@ def registrar_salida(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         pago_id = data['pago_id']
+        fecha_salida = data.get('fecha_salida')  # Manual input
         try:
             pago = Pago.objects.get(id=pago_id, fecha_salida__isnull=True)
-            pago.fecha_salida = timezone.now()
-            # Calcular valor (ejemplo: $2 por hora)
+            pago.fecha_salida = fecha_salida
+            # Calcular valor ($1 por hora)
             duracion = pago.fecha_salida - pago.fecha_ingreso
             horas = duracion.total_seconds() / 3600
-            pago.valor = round(horas * 2, 2)  # $2 por hora
+            pago.valor = round(horas * 1, 2)  # $1 por hora
             pago.save()
             pago.espacio.ocupado = False
             pago.espacio.save()

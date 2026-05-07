@@ -17,4 +17,7 @@ urlpatterns = [
     # Flujo parqueo
     path('ingreso/', views.registrar_ingreso, name='registrar_ingreso'),
     path('salida/', views.registrar_salida, name='registrar_salida'),
+
+    # Calcular pago
+    path('calcular/', views.calcular_pago, name='calcular_pago'),
 ]

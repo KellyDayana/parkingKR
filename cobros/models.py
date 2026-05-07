@@ -27,7 +27,7 @@ class Espacio(models.Model):
 class Pago(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, verbose_name="Cliente")
     espacio = models.ForeignKey(Espacio, on_delete=models.CASCADE, verbose_name="Espacio")
-    fecha_ingreso = models.DateTimeField(auto_now_add=True, verbose_name="Fecha de Ingreso")
+    fecha_ingreso = models.DateTimeField(verbose_name="Fecha de Ingreso")
     fecha_salida = models.DateTimeField(null=True, blank=True, verbose_name="Fecha de Salida")
     valor = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Valor")
 
